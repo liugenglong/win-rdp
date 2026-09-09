@@ -4,14 +4,13 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - name: 启用 RDP 并设置账号
+      - name: 启用RDP并设置账号
         shell: pwsh
         run: |
           Set-LocalUser -Name "runneradmin" -Password ("P@ssw0rd1234"|ConvertTo-SecureString -AsPlainText -Force)
-          Add-LocalGroupMember -Group "Administrators" -Member "runneradmin"
           Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" fDenyTSConnections 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-      - name: 安装并接入 Tailscale
+      - name: 安装并接入Tailscale
         shell: pwsh
         env:
           TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
