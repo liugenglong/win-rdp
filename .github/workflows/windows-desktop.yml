@@ -16,6 +16,6 @@ jobs:
           TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
         run: |
           winget install --id Tailscale.Tailscale --silent --accept-package-agreements --accept-source-agreements
-          & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=win-rdp --ssh
+          & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=win-rdp
           Write-Host "RDPIP:" ((& "C:\Program Files\Tailscale\tailscale.exe" ip -4) -join "")
           while($true){Start-Sleep 3600}
