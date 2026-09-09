@@ -1,0 +1,22 @@
+name: Windows Desktop (free RDP)
+on: workflow_dispatch
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: 启用 RDP 并设置账号
+        shell: pwsh
+        run: |
+          Set-LocalUser -Name "runneradmin" -Password ("P@ssw0rd1234"|ConvertTo-SecureString -AsPlainText -Force)
+          Add-LocalGroupMember -Group "Administrators" -Member "runneradmin"
+          Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" fDenyTSConnections 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+      - name: 安装并接入 Tailscale
+        shell: pwsh
+        env:
+          TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
+        run: |
+          winget install --id Tailscale.Tailscale --silent --accept-package-agreements --accept-source-agreements
+          & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=win-rdp --ssh
+          Write-Host "RDPIP:" ((& "C:\Program Files\Tailscale\tailscale.exe" ip -4) -join "")
+          while($true){Start-Sleep 3600}
