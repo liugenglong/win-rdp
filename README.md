@@ -9,3 +9,5 @@ gh run view 34435861419 --repo liugenglong/win-rdp --json status,conclusion
   "conclusion": "cancelled",
   "status": "completed"
 }
+gh run watch 34435861419 --repo liugenglong/win-rdp
+gh run delete 34339052616 --repo liugenglong/win-rdp
