@@ -1,0 +1,41 @@
+name: Windows Desktop (VNT)
+
+on: workflow_dispatch
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - name: 启用RDP并设置账号
+        shell: pwsh
+        run: |
+          Set-LocalUser -Name "runneradmin" -Password ("P@ssw0rd1234" | ConvertTo-SecureString -AsPlainText -Force)
+          Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" fDenyTSConnections -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+      - name: 下载VNT
+        shell: pwsh
+        timeout-minutes: 5
+        run: |
+          $dir = "C:\vnt"
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $ver = "v1.2.16"
+          $url = "https://github.com/vnt-dev/vnt/releases/download/$ver/vnt-x86_64-pc-windows-msvc-$ver.tar.gz"
+          Invoke-WebRequest $url -OutFile "$dir\vnt.tar.gz"
+          tar -xzf "$dir\vnt.tar.gz" -C $dir
+          Invoke-WebRequest "https://www.wintun.net/builds/wintun-0.14.1.zip" -OutFile "$dir\wintun.zip"
+          Expand-Archive "$dir\wintun.zip" -DestinationPath "$dir\wintun" -Force
+          $dll = Get-ChildItem "$dir\wintun" -Recurse -Filter wintun.dll | Where-Object { $_.FullName -match "amd64" } | Select-Object -First 1
+          Copy-Item $dll.FullName "$dir\wintun.dll" -Force
+          Get-ChildItem $dir | Select-Object Name, Length
+
+      - name: 启动VNT并保持在线(供RDP连接)
+        shell: pwsh
+        run: |
+          $dir = "C:\vnt"
+          Start-Process -FilePath "$dir\vnt-cli.exe" -ArgumentList "-k","stliugenglong","-n","ghrdp" -WorkingDirectory $dir -RedirectStandardOutput "$dir\vnt.out" -RedirectStandardError "$dir\vnt.err"
+          Start-Sleep 20
+          Write-Host "=== vnt 输出 ==="
+          Get-Content "$dir\vnt.out","$dir\vnt.err" -Raw -ErrorAction SilentlyContinue
+          while($true){Start-Sleep 3600}
