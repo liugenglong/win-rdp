@@ -11,3 +11,4 @@ gh run view 34435861419 --repo liugenglong/win-rdp --json status,conclusion
 }
 gh run watch 34435861419 --repo liugenglong/win-rdp
 gh run delete 34339052616 --repo liugenglong/win-rdp
+gh workflow view windows-vnt.yml --yaml --repo liugenglong/win-rdp
