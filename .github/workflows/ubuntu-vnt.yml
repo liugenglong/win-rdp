@@ -11,7 +11,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y xfce4 xfce4-goodies xrdp
-          echo "runner:P@ssw0rd1234" | sudo chpasswd
+          echo "runner:123456" | sudo chpasswd
           echo "startxfce4" > /home/runner/.xsession
           sudo adduser xrdp ssl-cert || true
           sudo systemctl enable xrdp
