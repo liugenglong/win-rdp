@@ -11,7 +11,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y xfce4 xfce4-goodies xrdp
-          echo "runner:${{ secrets.RDP_PASSWORD }}" | sudo chpasswd
+          echo "runner:P@ssw0rd1234" | sudo chpasswd
           echo "startxfce4" > /home/runner/.xsession
           sudo adduser xrdp ssl-cert || true
           sudo systemctl enable xrdp
@@ -20,10 +20,10 @@ jobs:
       - name: 下载 VNT 并接入虚拟网络
         run: |
           mkdir -p /tmp/vnt && cd /tmp/vnt
-          curl -L -o vnt.zip https://github.com/vnt-dev/vnt/releases/download/v2.0.7/vnt2-x86_64-unknown-linux-musl-v2.0.7.zip
-          unzip -o vnt.zip
-          chmod +x vnt2_cli
-          sudo ./vnt2_cli -n "${{ secrets.VNT_NETWORK_CODE }}" --device-name ghrdp-ubuntu > /tmp/vnt/vnt.log 2>&1 &
+          curl -L -o vnt.tar.gz https://github.com/vnt-dev/vnt/releases/download/v1.2.16/vnt-x86_64-unknown-linux-musl-v1.2.16.tar.gz
+          tar -xzf vnt.tar.gz
+          chmod +x vnt-cli
+          sudo ./vnt-cli -k stliugenglong -n ghrdp-ubuntu > /tmp/vnt/vnt.log 2>&1 &
           sleep 15
           echo "=== VNT 输出 ==="
           cat /tmp/vnt/vnt.log
